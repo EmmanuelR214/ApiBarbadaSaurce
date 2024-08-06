@@ -224,3 +224,4 @@ export const CargarPago = async(req, res) =>{
     res.status(500).json(['Error al cargar el pago'])
   }
 }
+
