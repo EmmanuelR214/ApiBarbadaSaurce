@@ -7,8 +7,8 @@ import bodyParser from 'body-parser';
 
 const app = express()
 app.use(cors({
-    origin: 'https://labarbada.store', 
-    // origin: 'http://localhost:5173',
+    //origin: 'https://labarbada.store', 
+    origin: 'http://localhost:5173',
     credentials: true  
 }))
 

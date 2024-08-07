@@ -95,8 +95,9 @@ export const ObtenerDetallesXprecio = async(req,res) =>{
 export const InsertShoppinCar = async (req, res) => {
   try {
     const { id_platillo, id_usuario, cantidad, total } = req.body;
-    
-    const [[searchPlatillo]] = await Coonexion.execute('CALL ObtenerCarrito(?)', [id_platillo]);
+    console.log(id_usuario, id_platillo)
+    const [[searchPlatillo]] = await Coonexion.execute('CALL ObtenerCarritoPorIDUsuarioYPlatillo(?, ?)', [id_usuario, id_platillo]);
+    console.log('busqueda',searchPlatillo)
     if (searchPlatillo && searchPlatillo.length > 0) {
       let id_car = searchPlatillo[0].id_carrito;
       let cant = searchPlatillo[0].cantidad;
@@ -109,12 +110,11 @@ export const InsertShoppinCar = async (req, res) => {
       if (result.affectedRows === 0) {
         return res.status(400).json({ message: 'Ocurrió un error al actualizar el carrito' });
       }
-      console.log('se actualizo el carrito')
+      
       res.status(200).json({ message: 'Producto agregado y actualizado en el carrito' });
     } else {
-      
       const [result] = await Coonexion.execute('CALL InsertarCarrito(?, ?, ?, ?)', [id_platillo, id_usuario, cantidad, total]);
-      
+      console.log(result)
       if (result.affectedRows === 0) {
         
         return res.status(400).json({ message: 'Ocurrió un error al agregar al carrito' });
@@ -132,7 +132,6 @@ export const GetShoppingCar = async(req,res) =>{
   try {
     const id = req.params.idUser
     const [[result]] = await Coonexion.execute('CALL ObtenerCarrito(?)', [id])
-    console.log(result)
     res.status(200).json([result])
   } catch (error) {
     console.log(error)
@@ -251,6 +250,9 @@ export const CargarPago = async(req, res) =>{
 
 //---Mensajes de whatsapp---//
 
+const accountSid = 'ACde858911459b13f40a546f82ce08baa7'
+const authToken = '240755142ef90b4ab55a02a110375efa'
+const client = new Twilio(accountSid, authToken);
 
 
 const MensajeUbicacion = ( message, coordinates) =>{
