@@ -96,7 +96,7 @@ export const InsertShoppinCar = async (req, res) => {
   try {
     const { id_platillo, id_usuario, cantidad, total } = req.body;
     
-    const [[searchPlatillo]] = await Coonexion.execute('CALL ObtenerCarrito(?)', [id_platillo]);
+    const [[searchPlatillo]] = await Coonexion.execute('CALL ObtenerCarritoPorIDUsuarioYPlatillo(?, ?)', [id_usuario, id_platillo]);
     if (searchPlatillo && searchPlatillo.length > 0) {
       let id_car = searchPlatillo[0].id_carrito;
       let cant = searchPlatillo[0].cantidad;
