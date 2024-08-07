@@ -1,5 +1,6 @@
 import { Coonexion } from "../db.js";
 import Openpay from "openpay";
+import Twilio  from "twilio";
 import { sendPurchaseReceipt } from "../middlewares/authMail.js";
 
 export const getCategorias = async (req, res) => {
@@ -168,8 +169,9 @@ export const UpdateShoppingCar = async(req, res) =>{
 
 export const CrearVenta = async(req, res) =>{
   try {
-    const { id_usuario, sumaSubtotales, id_direccion, metodoPago, precio, cambio, carrito, email } = req.body;
+    const { id_usuario, sumaSubtotales, id_direccion, metodoPago, precio, cambio, carrito, email, telefono } = req.body;
     sendPurchaseReceipt(email, carrito, sumaSubtotales, metodoPago)
+    const mensaje = [];
     console.log('carrito',carrito)
     const fechaActual = new Date();
     const estado = 'Pendiente';
@@ -178,11 +180,33 @@ export const CrearVenta = async(req, res) =>{
     for (const item of carrito) {
       const { id_relacion, cantidad, subtotal } = item;
       await Coonexion.execute('INSERT INTO descripcion_ventas (id_venta, id_relacion, cantidad, subtotal) VALUES (?, ?, ?, ?)', [ventaId, id_relacion, cantidad, subtotal]);
+      const [[rows]] = await Coonexion.execute('CALL ObtenerPlatillosID(?)', [id_relacion])
+      const { nombre_platillo, tamaño, presentacion } = rows[0];
+      let platilloTexto = `- ${nombre_platillo}`;
+      if (tamaño.toLowerCase() !== 'ninguno') {
+        platilloTexto += `, ${tamaño}`;
+      }
+      if (presentacion.toLowerCase() !== 'unica') {
+        platilloTexto += `, ${presentacion}`;
+      }
+    
+      mensaje.push(platilloTexto);
     }
     for (const item of carrito) {
       const { id_carrito } = item;
       await Coonexion.execute('DELETE FROM carrito WHERE id_carrito = ?', [id_carrito]);
     }
+    
+    const [result2] = await Coonexion.execute('SELECT * FROM direcciones WHERE id_direccion = ?', [id_direccion]);
+    const coordenadas = {lat: result2[0].latitud, lng: result2[0].longitud}
+    const mensajeFinal = `
+    Ubicación para el pedido de ${email}
+    *Pedido*
+    ${mensaje.join('\n')}
+    `;
+    const men = 'Tu pedido ha sido recibido y está en proceso de entrega. Gracias por tu compra!'
+    MensajeUbicacion(mensajeFinal, coordenadas)
+    MensajeCliente(men, telefono)
     
     res.status(200).json(['Compra realizada exitosamente']);
   } catch (error) {
@@ -225,3 +249,90 @@ export const CargarPago = async(req, res) =>{
   }
 }
 
+//---Mensajes de whatsapp---//
+
+const accountSid = process.env.ACCOUNTSID
+const authToken = process.env.AUTHTOKEN
+const client = new Twilio(accountSid, authToken);
+
+
+const MensajeUbicacion = ( message, coordinates) =>{
+  try {
+    client.messages.create({
+      body: message,
+      from: 'whatsapp:+14155238886', // Número de Twilio para WhatsApp
+      to: `whatsapp:+527712144870`,
+      persistentAction: coordinates ? [`geo:${coordinates.lat},${coordinates.lng}|${message}`] : undefined
+    })
+    .then(message => console.log(`Mensaje enviado: ${message.sid}`))
+    .catch(error => console.log(`Error al enviar mensaje: ${error.message}`));
+  } catch (error) {
+    return ['Error al enviar el mensaje']
+  }
+}
+
+const MensajeCliente = (message, telefono) =>{
+  try {
+    client.messages.create({
+      body: message,
+      from: 'whatsapp:+14155238886', // Número de Twilio para WhatsApp
+      to: `whatsapp:+52${telefono}`
+    })
+    .then(message => console.log(`Mensaje de confirmación enviado: ${message.sid}`))
+    .catch(error => console.log(`Error al enviar mensaje de confirmación: ${error.message}`));
+  } catch (error) {
+    return ['Error al enviar el mensaje']
+  }
+}
+
+
+function getRandomNumberBetween24And30() {
+  const min = 24;
+  const max = 30;
+  return Math.floor(Math.random() * (max - min + 1)) + min;
+}
+
+export const InteraccionWhatsApp = async(req, res) =>{
+  try {
+    const twilioSignature = req.headers['x-twilio-signature'];
+    const requestBody = req.body;
+  
+    // Verificar la firma de Twilio para asegurarse de que la solicitud es legítima
+    const isValidRequest = Twilio.validateRequest(
+      authToken,
+      twilioSignature,
+      `https://api-barbada-saurce.vercel.app/api/whatsapp-webhook`,
+      requestBody
+    );
+  
+    if (!isValidRequest) {
+      return res.status(403).send('Invalid request');
+    }
+  
+    const from = requestBody.From;
+    const body = requestBody.Body.trim().toLowerCase();
+  
+    if (body === 'recibir') {
+      // Actualizar la base de datos para marcar el pedido como recibido
+      // Enviar confirmación al cliente
+      const randomNumber = getRandomNumberBetween24And30();
+      client.messages.create({
+        body: `Su pedido esta en preparación y estará listo para ser entregado en ${randomNumber} minutos .`,
+        from: 'whatsapp:+14155238886',
+        to: from
+      });
+    } else if (body === 'cancelar') {
+      // Actualizar la base de datos para marcar el pedido como cancelado
+      // Enviar confirmación al cliente
+      client.messages.create({
+        body: 'Su pedido ha sido cancelado.',
+        from: 'whatsapp:+14155238886',
+        to: from
+      });
+    }
+  
+    res.status(200).send('Webhook received');
+  } catch (error) {
+    console.log(error)
+  }
+}

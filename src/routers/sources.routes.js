@@ -1,6 +1,6 @@
 import {Router} from 'express'
 import {validateSchema} from '../middlewares/validator.middleware.js'
-import { CargarPago, CrearVenta, DeleteCarrito, DescripcionPlatillo, getCategorias, getMenu, getMenuPorCategoria, getMenuPorNombre, GetShoppingCar, InsertShoppinCar, ObtenerDetallesXprecio, ObtenerPrecio, UpdateShoppingCar } from '../controllers/sources.controllers.js'
+import { CargarPago, CrearVenta, DeleteCarrito, DescripcionPlatillo, getCategorias, getMenu, getMenuPorCategoria, getMenuPorNombre, GetShoppingCar, InsertShoppinCar, InteraccionWhatsApp, ObtenerDetallesXprecio, ObtenerPrecio, UpdateShoppingCar } from '../controllers/sources.controllers.js'
 
 const router = Router()
 
@@ -30,6 +30,8 @@ router.put('/update-shoppingcar', UpdateShoppingCar)
 router.post('/pago-tarjeta', CargarPago)
 
 router.post('/venta', CrearVenta)
+
+router.post('/whatsapp-webhook', InteraccionWhatsApp)
 
 
 

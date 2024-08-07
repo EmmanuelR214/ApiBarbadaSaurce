@@ -2,6 +2,8 @@ import express from 'express'
 import cors from 'cors';
 import cookieParser from 'cookie-parser';
 import indexRoutes from './routers/sources.routes.js'
+import bodyParser from 'body-parser';
+
 
 const app = express()
 app.use(cors({
@@ -12,6 +14,7 @@ app.use(cors({
 
 app.use(express.json())
 app.use(cookieParser())
+app.use(bodyParser.json());
 
 app.use("/api",indexRoutes)
 
