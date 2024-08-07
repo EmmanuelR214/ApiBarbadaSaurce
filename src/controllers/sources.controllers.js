@@ -251,8 +251,8 @@ export const CargarPago = async(req, res) =>{
 
 //---Mensajes de whatsapp---//
 
-const accountSid = process.env.ACCOUNTSID
-const authToken = process.env.AUTHTOKEN
+const accountSid = 'ACde858911459b13f40a546f82ce08baa7'
+const authToken = '240755142ef90b4ab55a02a110375efa'
 const client = new Twilio(accountSid, authToken);
 
 
