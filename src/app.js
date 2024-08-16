@@ -6,9 +6,9 @@ import bodyParser from 'body-parser';
 
 
 const app = express()
+const allowedOrigins = ['http://localhost:5173', 'https://labarbada.store', 'https://app.labarbada.com/']
 app.use(cors({
-    origin: 'https://labarbada.store', 
-    // origin: 'http://localhost:5173',
+    origin: allowedOrigins,
     credentials: true  
 }))
 
