@@ -238,6 +238,7 @@ export const CargarPago = async(req, res) =>{
     
     openpay.charges.create(chargeRequest, (error, charge) => {
       if (error) {
+        console.log(error)
         return res.status(500).send(error);
       }
       res.status(200).send(charge);
