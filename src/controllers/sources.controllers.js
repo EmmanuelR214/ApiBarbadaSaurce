@@ -236,7 +236,7 @@ export const CargarPago = async(req, res) =>{
       device_session_id,
       customer,
       use_3d_secure: true,
-      redirect_url: 'https://labarbada.store/success-pay'
+      redirect_url: 'https://labarbada.store/success-pay?method=openpay'
     };
     
     openpay.charges.create(chargeRequest, (error, charge) => {
