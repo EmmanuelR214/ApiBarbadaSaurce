@@ -29,7 +29,7 @@ router.put('/update-shoppingcar', UpdateShoppingCar)
 
 router.post('/pago-tarjeta', CargarPago)
 
-router.get('verificar-transaccion/:transactionId', VerificarTransaccion)
+router.get('/verificar-transaccion/:transactionId', VerificarTransaccion)
 
 router.post('/venta', CrearVenta)
 
