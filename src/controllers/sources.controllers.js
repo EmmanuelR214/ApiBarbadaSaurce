@@ -234,20 +234,50 @@ export const CargarPago = async(req, res) =>{
       amount,
       description,
       device_session_id,
-      customer
+      customer,
+      use_3d_secure: true,
+      redirect_url: 'https://labarbada.store/success-pay'
     };
     
     openpay.charges.create(chargeRequest, (error, charge) => {
       if (error) {
+        console.log('error interno: ', error);
         return res.status(500).send(error);
+      }
+      
+      if (charge && charge.payment_method && charge.payment_method.type === 'redirect') {
+        res.status(200).send({
+          requires_action: true,
+          payment_method: {
+            url: charge.payment_method.url
+          }
+        });
+      } else {
+        res.status(200).send(charge);
+      }
+    });
+  } catch (error) {
+    console.log('error de servidor',error)
+    res.status(500).json(['Error al cargar el pago'])
+  }
+}
+
+// Ejemplo en el backend
+export const VerificarTransaccion = async (req, res) => {
+  const transactionId = req.params.transactionId;
+  try {
+    const openpay = new Openpay(process.env.MERCHANT_ID, process.env.PRIVATE_KEY, false);
+    openpay.charges.get(transactionId, (error, charge) => {
+      if (error) {
+        return res.status(500).send({ error: error });
       }
       res.status(200).send(charge);
     });
   } catch (error) {
-    console.log(error)
-    res.status(500).json(['Error al cargar el pago'])
+    res.status(500).send({ error: 'Error al verificar la transacción' });
   }
-}
+};
+
 
 //---Mensajes de whatsapp---//
 const accountSid = 'ACde858911459b13f40a546f82ce08baa7'
