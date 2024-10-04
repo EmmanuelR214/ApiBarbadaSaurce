@@ -12,8 +12,8 @@ webPush.setVapidDetails(
 
 // Ruta para recibir y almacenar la suscripción en la base de datos
 export const Subscribe = async (req, res) => {
+  const { subscription } = req.body;
   try {
-    const { subscription } = req.body;
     console.log(subscription)
     const {endpoint, keys} = subscription
     
@@ -25,7 +25,7 @@ export const Subscribe = async (req, res) => {
     res.status(201).json(['Suscripción guardada en la base de datos.']);
   } catch (error) {
     console.log(error)
-    res.status(500).json(['Error al guardar la suscripción.', error]);
+    res.status(500).json(['Error al guardar la suscripción.', error[0], subscription]);
   }
 }
 
