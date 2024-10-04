@@ -16,8 +16,8 @@ export const Subscribe = async (req, res) => {
   try {    
     const endpoint = subscription.endpoint;
     
-    const p256dh = subscription.options.keys.p256dh;
-    const auth = subscription.options.keys.auth;
+    const p256dh = subscription.keys.p256dh;
+    const auth = subscription.keys.auth;
     
     await Coonexion.execute(`INSERT INTO suscripciones (endpoint, p256dh, auth) VALUES (?, ?, ?) ON DUPLICATE KEY UPDATE p256dh = ?, auth = ?`, [endpoint, p256dh, auth, p256dh, auth])
     
