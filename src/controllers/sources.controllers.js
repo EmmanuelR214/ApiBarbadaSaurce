@@ -214,7 +214,7 @@ export const CrearVenta = async(req, res) =>{
   }
 }
 
-export const CargarPago = async(req, res) =>{
+export const CargarPago = async(req, res) => {
   try {
     const {token_id, device_session_id, amount, description, name, last_name, email} = req.body
     const idKey = process.env.MERCHANT_ID
@@ -235,7 +235,8 @@ export const CargarPago = async(req, res) =>{
       device_session_id,
       customer,
       use_3d_secure: true,
-      redirect_url: 'http://localhost:5173/success-pay?method=openpay'
+      // redirect_url: 'http://localhost:5173/success-pay?method=openpay'
+      redirect_url: 'https://labarbada.store/success-pay?method=openpay'
     };
     
     openpay.charges.create(chargeRequest, (error, charge) => {
@@ -264,7 +265,6 @@ export const CargarPago = async(req, res) =>{
 // Ejemplo en el backend
 export const VerificarTransaccion = async (req, res) => {
   const transactionId = req.params.transactionId;
-  console.log(transactionId)
   try {
     const openpay = new Openpay(process.env.MERCHANT_ID, process.env.PRIVATE_KEY, false);
     openpay.charges.get(transactionId, (error, charge) => {
@@ -277,6 +277,24 @@ export const VerificarTransaccion = async (req, res) => {
     res.status(500).send({ error: 'Error al verificar la transacción' });
   }
 };
+
+
+// Ejemplo en el backend
+// export const VerificarTransaccion = async (req, res) => {
+//   const transactionId = req.params.transactionId;
+//   console.log(transactionId)
+//   try {
+//     const openpay = new Openpay(process.env.MERCHANT_ID, process.env.PRIVATE_KEY, false);
+//     openpay.charges.get(transactionId, (error, charge) => {
+//       if (error) {
+//         return res.status(500).send({ error: error });
+//       }
+//       res.status(200).send(charge);
+//     });
+//   } catch (error) {
+//     res.status(500).send({ error: 'Error al verificar la transacción' });
+//   }
+// };
 
 
 //---Mensajes de whatsapp---//
