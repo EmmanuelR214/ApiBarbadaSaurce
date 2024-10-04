@@ -25,7 +25,7 @@ export const Subscribe = async (req, res) => {
     res.status(201).json(['Suscripción guardada en la base de datos.']);
   } catch (error) {
     console.log(error)
-    res.status(500).json(['Error al guardar la suscripción.']);
+    res.status(500).json(['Error al guardar la suscripción.', error]);
   }
 }
 
