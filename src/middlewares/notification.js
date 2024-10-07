@@ -1,14 +1,6 @@
-import pkg  from "web-push";
 import { Coonexion } from "../db.js";
-const webPush = pkg
+import { webPush } from "../libs/web-push.js"
 
-const validKeys = webPush.generateVAPIDKeys();
-
-webPush.setVapidDetails(
-  "mailto:labarbada23@gmail.com",
-  process.env.VAPID_PUBLIC_KEY,
-  process.env.VAPID_PRIVATE_KEY
-)
 
 // Ruta para recibir y almacenar la suscripción en la base de datos
 export const Subscribe = async (req, res) => {
