@@ -7,4 +7,4 @@ webPush.setVapidDetails(
   process.env.VAPID_PRIVATE_KEY
 )
 
-module.export = webPush
+module.exports = webPush

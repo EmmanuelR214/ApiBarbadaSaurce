@@ -1,7 +1,4 @@
-import { Coonexion } from "../db.js";
-import { webPush } from "../libs/web-push.js"
-
-
+import { Coonexion } from "../db.js"
 // Ruta para recibir y almacenar la suscripción en la base de datos
 export const Subscribe = async (req, res) => {
   const subscription = req.body;
