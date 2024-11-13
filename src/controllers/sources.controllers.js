@@ -262,6 +262,56 @@ export const CargarPago = async(req, res) => {
   }
 }
 
+/*
+export const CargarPago = async(req, res) => {
+  try {
+    const {token_id, device_session_id, amount, description, name, last_name, email} = req.body
+    const idKey = process.env.MERCHANT_ID
+    const keyPrivate = process.env.PRIVATE_KEY
+    const openpay = new Openpay(idKey, keyPrivate, false); 
+    
+    const customer = {
+      name,
+      last_name,
+      email
+    }
+    
+    const chargeRequest = {
+      method: 'card',
+      source_id: token_id,
+      amount,
+      description,
+      device_session_id,
+      customer,
+      use_3d_secure: true,
+      // redirect_url: 'http://localhost:5173/success-pay?method=openpay'
+      redirect_url: 'https://labarbada.store/success-pay?method=openpay'
+    };
+    
+    openpay.charges.create(chargeRequest, (error, charge) => {
+      if (error) {
+        console.log('error interno: ', error);
+        return res.status(500).send(error);
+      }
+      
+      if (charge && charge.payment_method && charge.payment_method.type === 'redirect') {
+        res.status(200).send({
+          requires_action: true,
+          payment_method: {
+            url: charge.payment_method.url
+          }
+        });
+      } else {
+        res.status(200).send(charge);
+      }
+    });
+  } catch (error) {
+    console.log('error de servidor',error)
+    res.status(500).json(['Error al cargar el pago'])
+  }
+}
+*/
+
 // Ejemplo en el backend
 export const VerificarTransaccion = async (req, res) => {
   const transactionId = req.params.transactionId;
