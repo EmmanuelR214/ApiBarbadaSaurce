@@ -2,7 +2,6 @@ import {Router} from 'express'
 import {validateSchema} from '../middlewares/validator.middleware.js'
 import { CargarPago, CrearVenta, DeleteCarrito, DescripcionPlatillo, getCategorias, getMenu, getMenuPorCategoria, getMenuPorNombre, GetShoppingCar, InsertShoppinCar, InteraccionWhatsApp, ObtenerDetallesXprecio, ObtenerPrecio, UpdateShoppingCar, VerificarTransaccion } from '../controllers/sources.controllers.js'
 import { Subscribe } from '../middlewares/notification.js'
-import { generarToken, realizarPago } from '../controllers/payment.controller.js'
 
 const router = Router()
 
@@ -41,10 +40,6 @@ router.post('/subscribe', Subscribe)
 
 
 
-
-router.post('/generate-token', generarToken)
-
-router.post('/realizar-pagoMovi', realizarPago)
 
 
 export default router
