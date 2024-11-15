@@ -1,16 +1,33 @@
 import Stripe from "stripe";
 
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
+const stripe = new Stripe(process.env.STRIPE_SECRET_KEY,  {
+  apiVersion: '2024-10-28.acacia',
+});
 
-export const createPaymentStripe = async (req, res) => {
+export const createPaymentIntent = async (req, res) => {
   try {
-    const { amount, currency } = req.body;
-    stripe.checkout.sessions.create({
+    const { amount } = req.body;
+    const customer = await stripe.customers.create();
+    const ephemeralKey = await stripe.ephemeralKeys.create(
+      { customer: customer.id },
+      { apiVersion: '2024-10-28.acacia' }
+    );
+    const paymentIntent = await stripe.paymentIntents.create({
       amount,
-      currency,
-    })
-    res.json({ clientSecret: paymentIntent.client_secret });
+      currency: 'mxn',
+      customer: customer.id,
+      automatic_payment_methods: {
+        enabled: true,
+      },
+    });
+
+    res.json({
+      paymentIntent: paymentIntent.client_secret,
+      ephemeralKey: ephemeralKey.secret,
+      customer: customer.id,
+    });
   } catch (error) {
-    res.status(400).json({ error: error.message });
+    console.error('Error al procesar el pago:', error);
+    res.status(500).json({ message: 'Hubo un error al procesar el pago', error: error.message });
   }
-}
+};
