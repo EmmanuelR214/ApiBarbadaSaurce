@@ -1,6 +1,6 @@
 import {Router} from 'express'
 import {validateSchema} from '../middlewares/validator.middleware.js'
-import { CargarPago, CrearVenta, DeleteCarrito, DescripcionPlatillo, getCategorias, getMenu, getMenuPorCategoria, getMenuPorNombre, GetShoppingCar, InsertShoppinCar, InteraccionWhatsApp, ObtenerDetallesXprecio, ObtenerPrecio, UpdateShoppingCar, VerificarTransaccion } from '../controllers/sources.controllers.js'
+import { CargarPago, CrearVenta, DeleteCarrito, DescripcionPlatillo, getApplications, getCategorias, getMenu, getMenuPorCategoria, getMenuPorNombre, GetShoppingCar, InsertShoppinCar, InteraccionWhatsApp, ObtenerDetallesXprecio, ObtenerPrecio, UpdateShoppingCar, VerificarTransaccion } from '../controllers/sources.controllers.js'
 import { Subscribe } from '../middlewares/notification.js'
 import { createPaymentIntent } from '../controllers/payment.controller.js'
 
@@ -42,5 +42,6 @@ router.post('/subscribe', Subscribe)
 
 router.post('/create-payment-stripe', createPaymentIntent)
 
+router.get('/aplicaciones', getApplications)
 
 export default router

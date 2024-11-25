@@ -3,6 +3,16 @@ import Openpay from "openpay";
 import Twilio  from "twilio";
 import { sendPurchaseReceipt } from "../middlewares/authMail.js";
 
+export const getApplications = async (req, res) => {
+  try {
+    const [result] = await Coonexion.execute('SELECT * FROM aplicaciones')
+    res.status(200).json(result)
+  } catch (error) {
+    console.log(error)
+    res.status(500).json(['Error al obtener las aplicaciones'])
+  }
+}
+
 export const getCategorias = async (req, res) => {
   try {
     const [[category]] = await Coonexion.execute('CALL ObtenerCategorias()')
