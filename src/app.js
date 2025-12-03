@@ -7,7 +7,7 @@ import bodyParser from 'body-parser';
 
 const app = express()
 
-const allowedOrigins = ['http://localhost:5173', 'http://localhost:4173', 'https://labarbada.store', 'https://app.labarbada.com', 'https://la-barbada2.vercel.app/']
+const allowedOrigins = ['http://localhost:5173', 'http://localhost:4173', 'https://labarbada.store', 'https://app.labarbada.com', 'https://la-barbada2.vercel.app']
 app.use(cors({
     origin: allowedOrigins,
     credentials: true  
